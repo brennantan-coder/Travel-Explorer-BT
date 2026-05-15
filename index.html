@@ -1,0 +1,1259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Travel Explorer — We went, so you know where to go.</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --black: #0a0a0a;
+  --white: #ffffff;
+  --gold: #c8a96e;
+  --gold-light: #e8d5a3;
+  --off-white: #f5f5f0;
+  --grey: #6b6b6b;
+  --light-grey: #e8e8e4;
+  --danger: #c0392b;
+  --success: #27ae60;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; font-size: 16px; }
+body { font-family: 'Inter', sans-serif; background: var(--white); color: var(--black); line-height: 1.6; }
+a { text-decoration: none; color: inherit; }
+img { display: block; width: 100%; object-fit: cover; }
+button { cursor: pointer; font-family: 'Inter', sans-serif; }
+input, select, textarea { font-family: 'Inter', sans-serif; }
+
+/* ── NAV ── */
+#nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 1.2rem 4rem;
+  background: transparent;
+  transition: background 0.3s, box-shadow 0.3s;
+}
+#nav.scrolled { background: var(--white); box-shadow: 0 2px 20px rgba(0,0,0,0.08); }
+#nav.scrolled .nav-logo, #nav.scrolled .nav-links a { color: var(--black); }
+.nav-logo { font-family: 'Playfair Display', serif; font-size: 1.4rem; font-weight: 700; color: var(--white); letter-spacing: 0.02em; }
+.nav-logo span { color: var(--gold); }
+.nav-links { display: flex; gap: 2rem; list-style: none; }
+.nav-links a { font-size: 0.85rem; font-weight: 500; color: var(--white); letter-spacing: 0.08em; text-transform: uppercase; transition: color 0.2s; }
+.nav-links a:hover { color: var(--gold); }
+.nav-hamburger { display: none; flex-direction: column; gap: 5px; background: none; border: none; padding: 0.5rem; }
+.nav-hamburger span { display: block; width: 24px; height: 2px; background: var(--white); transition: background 0.3s; }
+#nav.scrolled .nav-hamburger span { background: var(--black); }
+
+/* ── HERO ── */
+#home {
+  position: relative; height: 100vh; min-height: 600px;
+  display: flex; align-items: center; justify-content: center;
+  overflow: hidden;
+}
+.hero-bg {
+  position: absolute; inset: 0;
+  background: url('https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=1920&q=80') center/cover no-repeat;
+}
+.hero-overlay {
+  position: absolute; inset: 0;
+  background: linear-gradient(to bottom, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.3) 50%, rgba(0,0,0,0.7) 100%);
+}
+.hero-content {
+  position: relative; z-index: 2; text-align: center; color: var(--white);
+  max-width: 800px; padding: 0 2rem;
+}
+.hero-eyebrow { font-size: 0.75rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold); margin-bottom: 1.5rem; }
+.hero-content h1 { font-family: 'Playfair Display', serif; font-size: clamp(2.5rem, 6vw, 5rem); font-weight: 900; line-height: 1.1; margin-bottom: 1.5rem; }
+.hero-content p { font-size: 1.1rem; font-weight: 300; opacity: 0.9; max-width: 560px; margin: 0 auto 2.5rem; line-height: 1.7; }
+.hero-btns { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+.btn-primary { background: var(--gold); color: var(--black); padding: 0.85rem 2rem; font-size: 0.85rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; border: 2px solid var(--gold); transition: all 0.2s; }
+.btn-primary:hover { background: transparent; color: var(--white); }
+.btn-outline { background: transparent; color: var(--white); padding: 0.85rem 2rem; font-size: 0.85rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; border: 2px solid rgba(255,255,255,0.6); transition: all 0.2s; }
+.btn-outline:hover { border-color: var(--white); background: rgba(255,255,255,0.1); }
+.hero-scroll-hint { position: absolute; bottom: 2rem; left: 50%; transform: translateX(-50%); z-index: 2; display: flex; flex-direction: column; align-items: center; gap: 0.5rem; color: rgba(255,255,255,0.6); font-size: 0.7rem; letter-spacing: 0.15em; text-transform: uppercase; }
+.scroll-line { width: 1px; height: 40px; background: rgba(255,255,255,0.4); animation: scrollPulse 2s ease-in-out infinite; }
+@keyframes scrollPulse { 0%,100%{opacity:0.4;transform:scaleY(1)} 50%{opacity:1;transform:scaleY(1.2)} }
+
+/* ── SECTION COMMONS ── */
+section { padding: 6rem 4rem; }
+.section-label { font-size: 0.7rem; letter-spacing: 0.25em; text-transform: uppercase; color: var(--gold); margin-bottom: 0.75rem; }
+.section-title { font-family: 'Playfair Display', serif; font-size: clamp(2rem, 4vw, 3rem); font-weight: 700; line-height: 1.2; margin-bottom: 1rem; }
+.section-subtitle { color: var(--grey); font-size: 1rem; max-width: 540px; margin-bottom: 3rem; }
+.section-header { margin-bottom: 3rem; }
+
+/* ── GUIDES SECTION ── */
+#guides { background: var(--off-white); }
+.guides-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; }
+.guide-card { background: var(--white); overflow: hidden; transition: transform 0.3s, box-shadow 0.3s; }
+.guide-card:hover { transform: translateY(-6px); box-shadow: 0 20px 40px rgba(0,0,0,0.12); }
+.guide-card-img { height: 260px; overflow: hidden; }
+.guide-card-img img { height: 100%; transition: transform 0.5s ease; }
+.guide-card:hover .guide-card-img img { transform: scale(1.05); }
+.guide-card-body { padding: 1.75rem; }
+.guide-tag { font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold); font-weight: 600; margin-bottom: 0.6rem; }
+.guide-card-body h3 { font-family: 'Playfair Display', serif; font-size: 1.4rem; font-weight: 700; margin-bottom: 0.75rem; line-height: 1.3; }
+.guide-card-body p { font-size: 0.9rem; color: var(--grey); line-height: 1.65; margin-bottom: 1.25rem; }
+.btn-text { font-size: 0.8rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--black); border-bottom: 1.5px solid var(--gold); padding-bottom: 2px; background: none; border-top: none; border-left: none; border-right: none; transition: color 0.2s; }
+.btn-text:hover { color: var(--gold); }
+
+/* ── CITIES SECTION ── */
+#cities { background: var(--white); }
+.cities-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem; }
+.city-card { background: var(--white); border: 1px solid var(--light-grey); overflow: hidden; transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s; }
+.city-card:hover { transform: translateY(-5px); box-shadow: 0 16px 32px rgba(0,0,0,0.1); border-color: var(--gold); }
+.city-card-img { height: 200px; overflow: hidden; }
+.city-card-img img { height: 100%; transition: transform 0.5s; }
+.city-card:hover .city-card-img img { transform: scale(1.06); }
+.city-card-body { padding: 1.25rem; }
+.city-country { font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold); font-weight: 600; margin-bottom: 0.3rem; }
+.city-card-body h3 { font-family: 'Playfair Display', serif; font-size: 1.2rem; font-weight: 700; margin-bottom: 0.5rem; }
+.city-card-body p { font-size: 0.82rem; color: var(--grey); line-height: 1.55; margin-bottom: 0.9rem; }
+.city-meta { display: flex; flex-direction: column; gap: 0.3rem; margin-bottom: 1rem; }
+.city-meta-item { font-size: 0.75rem; color: var(--grey); display: flex; align-items: center; gap: 0.4rem; }
+.city-meta-item span:first-child { font-size: 0.9rem; }
+.btn-card { display: block; width: 100%; padding: 0.65rem; background: var(--black); color: var(--white); font-size: 0.75rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; border: 2px solid var(--black); transition: all 0.2s; }
+.btn-card:hover { background: var(--gold); border-color: var(--gold); color: var(--black); }
+
+/* ── MODAL ── */
+.modal-overlay {
+  position: fixed; inset: 0; z-index: 2000;
+  background: rgba(0,0,0,0.85);
+  display: flex; align-items: flex-start; justify-content: center;
+  overflow-y: auto; padding: 2rem 1rem;
+  opacity: 0; visibility: hidden; transition: opacity 0.3s, visibility 0.3s;
+}
+.modal-overlay.active { opacity: 1; visibility: visible; }
+.modal-box {
+  background: var(--white); width: 100%; max-width: 860px;
+  position: relative; margin: auto;
+  transform: translateY(30px); transition: transform 0.3s;
+}
+.modal-overlay.active .modal-box { transform: translateY(0); }
+.modal-hero { position: relative; height: 320px; overflow: hidden; }
+.modal-hero img { height: 100%; }
+.modal-hero-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 60%); }
+.modal-hero-text { position: absolute; bottom: 1.5rem; left: 2rem; color: var(--white); }
+.modal-hero-text h2 { font-family: 'Playfair Display', serif; font-size: 2rem; font-weight: 900; }
+.modal-hero-text span { font-size: 0.75rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold-light); }
+.modal-close { position: absolute; top: 1rem; right: 1rem; background: rgba(0,0,0,0.5); color: var(--white); border: none; width: 36px; height: 36px; font-size: 1.1rem; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: background 0.2s; z-index: 10; }
+.modal-close:hover { background: rgba(0,0,0,0.8); }
+.modal-tabs { display: flex; border-bottom: 1px solid var(--light-grey); overflow-x: auto; }
+.modal-tab { padding: 1rem 1.5rem; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; background: none; border: none; border-bottom: 2px solid transparent; color: var(--grey); cursor: pointer; white-space: nowrap; transition: all 0.2s; }
+.modal-tab.active { color: var(--black); border-bottom-color: var(--gold); }
+.modal-tab:hover { color: var(--black); }
+.modal-content { padding: 2rem; }
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+.tab-panel h4 { font-family: 'Playfair Display', serif; font-size: 1.2rem; font-weight: 700; margin-bottom: 1rem; }
+.tab-panel p { font-size: 0.9rem; color: var(--grey); line-height: 1.7; margin-bottom: 1rem; }
+.tab-panel ul { list-style: none; padding: 0; }
+.tab-panel ul li { font-size: 0.88rem; color: var(--grey); padding: 0.4rem 0; padding-left: 1.2rem; position: relative; line-height: 1.5; }
+.tab-panel ul li::before { content: '→'; position: absolute; left: 0; color: var(--gold); font-size: 0.8rem; }
+.itinerary-day { margin-bottom: 1.5rem; }
+.itinerary-day h5 { font-size: 0.7rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold); font-weight: 600; margin-bottom: 0.5rem; border-left: 3px solid var(--gold); padding-left: 0.6rem; }
+.cost-table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+.cost-table tr { border-bottom: 1px solid var(--light-grey); }
+.cost-table td { padding: 0.6rem 0; color: var(--grey); }
+.cost-table td:last-child { font-weight: 600; color: var(--black); text-align: right; }
+.cost-table tr:last-child { border-bottom: none; }
+.cost-total td { font-weight: 700 !important; color: var(--black) !important; border-top: 2px solid var(--black) !important; }
+
+/* ── TOOLS SECTION ── */
+#tools { background: var(--off-white); }
+.tools-tabs-nav { display: flex; gap: 0; border-bottom: 2px solid var(--light-grey); margin-bottom: 2.5rem; }
+.tool-tab-btn { padding: 0.9rem 2rem; font-size: 0.8rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; background: none; border: none; border-bottom: 3px solid transparent; margin-bottom: -2px; color: var(--grey); cursor: pointer; transition: all 0.2s; }
+.tool-tab-btn.active { color: var(--black); border-bottom-color: var(--gold); }
+.tool-tab-btn:hover { color: var(--black); }
+.tool-panel { display: none; }
+.tool-panel.active { display: block; }
+.tool-card { background: var(--white); padding: 2rem; box-shadow: 0 4px 20px rgba(0,0,0,0.06); }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; margin-bottom: 1.25rem; }
+.form-group { display: flex; flex-direction: column; gap: 0.4rem; }
+.form-group label { font-size: 0.75rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--grey); }
+.form-group input, .form-group select, .form-group textarea {
+  padding: 0.7rem 0.9rem; border: 1.5px solid var(--light-grey); background: var(--off-white);
+  font-size: 0.9rem; color: var(--black); transition: border-color 0.2s; outline: none;
+}
+.form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: var(--gold); background: var(--white); }
+.form-group.full { grid-column: 1/-1; }
+.btn-action { padding: 0.8rem 2rem; background: var(--black); color: var(--white); border: 2px solid var(--black); font-size: 0.8rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; transition: all 0.2s; }
+.btn-action:hover { background: var(--gold); border-color: var(--gold); color: var(--black); }
+.budget-result { margin-top: 1.5rem; padding: 1.5rem; background: var(--off-white); border-left: 4px solid var(--gold); display: none; }
+.budget-result.show { display: block; }
+.budget-result h4 { font-family: 'Playfair Display', serif; font-size: 1.4rem; font-weight: 700; }
+.budget-result .amount { font-size: 2.5rem; font-weight: 700; color: var(--gold); line-height: 1.1; margin: 0.25rem 0; }
+.budget-result p { font-size: 0.8rem; color: var(--grey); }
+.checklist-cats { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1.5rem; margin-bottom: 1.5rem; }
+.checklist-cat h4 { font-size: 0.75rem; letter-spacing: 0.12em; text-transform: uppercase; font-weight: 700; color: var(--black); margin-bottom: 0.75rem; padding-bottom: 0.5rem; border-bottom: 2px solid var(--gold); }
+.checklist-item { display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.4rem; }
+.checklist-item input[type="checkbox"] { width: 16px; height: 16px; accent-color: var(--gold); cursor: pointer; }
+.checklist-item label { font-size: 0.85rem; color: var(--grey); cursor: pointer; }
+.checklist-item input:checked + label { text-decoration: line-through; opacity: 0.5; }
+.itinerary-form { display: grid; grid-template-columns: 80px 1fr 2fr; gap: 1rem; align-items: end; margin-bottom: 1.5rem; }
+.itinerary-list { display: flex; flex-direction: column; gap: 0; }
+.itinerary-entry { display: flex; align-items: flex-start; gap: 1rem; padding: 0.9rem 0; border-bottom: 1px solid var(--light-grey); }
+.itinerary-entry-day { font-size: 0.65rem; letter-spacing: 0.15em; text-transform: uppercase; font-weight: 700; color: var(--gold); min-width: 55px; padding-top: 2px; }
+.itinerary-entry-body { flex: 1; }
+.itinerary-entry-body strong { font-size: 0.9rem; display: block; margin-bottom: 0.15rem; }
+.itinerary-entry-body span { font-size: 0.78rem; color: var(--grey); }
+.itinerary-entry-time { font-size: 0.75rem; color: var(--grey); min-width: 50px; }
+.btn-delete { background: none; border: none; color: var(--light-grey); font-size: 1rem; transition: color 0.2s; padding: 0; }
+.btn-delete:hover { color: var(--danger); }
+.empty-state { text-align: center; padding: 2rem; color: var(--light-grey); font-size: 0.85rem; }
+
+/* ── WEATHER SECTION ── */
+#weather { background: var(--black); color: var(--white); }
+#weather .section-title { color: var(--white); }
+#weather .section-subtitle { color: rgba(255,255,255,0.5); }
+.weather-search { display: flex; gap: 0; max-width: 500px; margin-bottom: 1.5rem; }
+.weather-search input { flex: 1; padding: 0.85rem 1.1rem; border: 1.5px solid rgba(255,255,255,0.2); background: rgba(255,255,255,0.07); color: var(--white); font-size: 0.95rem; outline: none; }
+.weather-search input::placeholder { color: rgba(255,255,255,0.4); }
+.weather-search input:focus { border-color: var(--gold); }
+.weather-search button { padding: 0.85rem 1.5rem; background: var(--gold); color: var(--black); border: none; font-size: 0.8rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; transition: background 0.2s; }
+.weather-search button:hover { background: var(--gold-light); }
+.weather-quick-btns { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 2rem; }
+.weather-quick-btn { padding: 0.4rem 0.9rem; background: transparent; border: 1px solid rgba(255,255,255,0.2); color: rgba(255,255,255,0.6); font-size: 0.75rem; cursor: pointer; transition: all 0.2s; }
+.weather-quick-btn:hover { border-color: var(--gold); color: var(--gold); }
+.weather-result { display: none; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); padding: 2rem; max-width: 500px; }
+.weather-result.show { display: block; }
+.weather-city-name { font-family: 'Playfair Display', serif; font-size: 1.6rem; font-weight: 700; margin-bottom: 0.25rem; }
+.weather-condition { font-size: 0.85rem; color: rgba(255,255,255,0.6); text-transform: capitalize; margin-bottom: 1.25rem; }
+.weather-temp { font-size: 3.5rem; font-weight: 300; color: var(--gold); line-height: 1; margin-bottom: 1.25rem; }
+.weather-temp sup { font-size: 1.5rem; }
+.weather-details { display: grid; grid-template-columns: repeat(3,1fr); gap: 1rem; }
+.weather-detail { text-align: center; padding: 0.75rem; background: rgba(255,255,255,0.05); }
+.weather-detail span { display: block; font-size: 0.65rem; letter-spacing: 0.15em; text-transform: uppercase; color: rgba(255,255,255,0.4); margin-bottom: 0.3rem; }
+.weather-detail strong { font-size: 1rem; color: var(--white); }
+.weather-error { display: none; color: rgba(255,100,100,0.8); font-size: 0.85rem; margin-top: 0.5rem; }
+.weather-error.show { display: block; }
+.weather-note { font-size: 0.75rem; color: rgba(255,255,255,0.3); margin-top: 1rem; }
+
+/* ── SAFETY SECTION ── */
+#safety { background: var(--off-white); }
+.safety-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.25rem; margin-bottom: 3rem; }
+.safety-card { background: var(--white); padding: 1.25rem; border-top: 3px solid var(--light-grey); transition: transform 0.2s, box-shadow 0.2s; }
+.safety-card:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.08); }
+.safety-card.safe { border-top-color: var(--success); }
+.safety-card.moderate { border-top-color: #e67e22; }
+.safety-card.caution { border-top-color: var(--danger); }
+.safety-card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; }
+.safety-card-header h4 { font-family: 'Playfair Display', serif; font-size: 1rem; font-weight: 700; }
+.safety-badge { font-size: 0.6rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; padding: 0.2rem 0.5rem; }
+.safety-badge.safe { background: rgba(39,174,96,0.12); color: var(--success); }
+.safety-badge.moderate { background: rgba(230,126,34,0.12); color: #e67e22; }
+.safety-badge.caution { background: rgba(192,57,43,0.12); color: var(--danger); }
+.safety-tips { list-style: none; margin-bottom: 0.75rem; }
+.safety-tips li { font-size: 0.78rem; color: var(--grey); padding: 0.25rem 0; padding-left: 1rem; position: relative; line-height: 1.4; }
+.safety-tips li::before { content: '•'; position: absolute; left: 0; color: var(--gold); }
+.safety-emergency { font-size: 0.72rem; color: var(--grey); border-top: 1px solid var(--light-grey); padding-top: 0.6rem; margin-top: 0.5rem; }
+.safety-emergency strong { color: var(--black); }
+.general-safety { background: var(--white); padding: 2rem; }
+.general-safety h3 { font-family: 'Playfair Display', serif; font-size: 1.3rem; margin-bottom: 1.25rem; }
+.general-tips-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 1rem; }
+.gen-tip { padding: 1rem; background: var(--off-white); }
+.gen-tip h5 { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.4rem; color: var(--black); }
+.gen-tip p { font-size: 0.8rem; color: var(--grey); line-height: 1.5; }
+
+/* ── ENQUIRY SECTION ── */
+#enquiry { background: var(--white); }
+.enquiry-wrap { display: grid; grid-template-columns: 1fr 1.6fr; gap: 4rem; align-items: start; }
+.enquiry-info h2 { font-family: 'Playfair Display', serif; font-size: 2.2rem; font-weight: 700; line-height: 1.2; margin-bottom: 1rem; }
+.enquiry-info p { font-size: 0.95rem; color: var(--grey); line-height: 1.7; margin-bottom: 1.5rem; }
+.enquiry-detail { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.6rem; font-size: 0.85rem; color: var(--grey); }
+.enquiry-detail span:first-child { font-size: 1.1rem; }
+.enquiry-form-box { background: var(--off-white); padding: 2.5rem; }
+.enquiry-form .form-row { margin-bottom: 1.1rem; }
+.form-error-msg { font-size: 0.72rem; color: var(--danger); margin-top: 0.2rem; display: none; }
+.form-group.has-error input, .form-group.has-error select, .form-group.has-error textarea { border-color: var(--danger); }
+.form-group.has-error .form-error-msg { display: block; }
+.enquiry-success { display: none; text-align: center; padding: 3rem 2rem; }
+.enquiry-success.show { display: block; }
+.enquiry-success h3 { font-family: 'Playfair Display', serif; font-size: 1.8rem; margin-bottom: 1rem; }
+.enquiry-success p { color: var(--grey); margin-bottom: 1.5rem; }
+.check-icon { font-size: 3rem; margin-bottom: 1rem; }
+
+/* ── FOOTER ── */
+footer { background: var(--black); color: rgba(255,255,255,0.5); padding: 3rem 4rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; }
+.footer-logo { font-family: 'Playfair Display', serif; font-size: 1.2rem; color: var(--white); font-weight: 700; }
+.footer-logo span { color: var(--gold); }
+.footer-copy { font-size: 0.78rem; }
+.footer-links { display: flex; gap: 1.5rem; }
+.footer-links a { font-size: 0.78rem; color: rgba(255,255,255,0.5); transition: color 0.2s; }
+.footer-links a:hover { color: var(--gold); }
+
+/* ── MOBILE NAV MENU ── */
+.mobile-menu { display: none; position: fixed; inset: 0; z-index: 999; background: var(--black); flex-direction: column; align-items: center; justify-content: center; gap: 2rem; }
+.mobile-menu.open { display: flex; }
+.mobile-menu a { font-family: 'Playfair Display', serif; font-size: 2rem; color: var(--white); font-weight: 700; transition: color 0.2s; }
+.mobile-menu a:hover { color: var(--gold); }
+.mobile-menu-close { position: absolute; top: 1.5rem; right: 1.5rem; background: none; border: none; color: var(--white); font-size: 1.5rem; cursor: pointer; }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 1024px) {
+  #nav { padding: 1rem 2rem; }
+  section { padding: 5rem 2rem; }
+  .cities-grid { grid-template-columns: repeat(3, 1fr); }
+  .guides-grid { grid-template-columns: repeat(2, 1fr); }
+  .safety-grid { grid-template-columns: repeat(2, 1fr); }
+  .enquiry-wrap { grid-template-columns: 1fr; }
+}
+@media (max-width: 768px) {
+  #nav { padding: 1rem 1.5rem; }
+  .nav-links { display: none; }
+  .nav-hamburger { display: flex; }
+  section { padding: 4rem 1.25rem; }
+  .cities-grid { grid-template-columns: repeat(2, 1fr); }
+  .guides-grid { grid-template-columns: 1fr; }
+  .safety-grid { grid-template-columns: repeat(2, 1fr); }
+  .form-row { grid-template-columns: 1fr; }
+  .itinerary-form { grid-template-columns: 1fr 1fr; }
+  .general-tips-grid { grid-template-columns: 1fr; }
+  footer { flex-direction: column; text-align: center; padding: 2rem 1.5rem; }
+}
+@media (max-width: 480px) {
+  .cities-grid { grid-template-columns: 1fr; }
+  .safety-grid { grid-template-columns: 1fr; }
+  .checklist-cats { grid-template-columns: 1fr 1fr; }
+  .itinerary-form { grid-template-columns: 1fr; }
+  .weather-details { grid-template-columns: 1fr 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- ── NAV ── -->
+<nav id="nav">
+  <a href="#home" class="nav-logo">Travel<span>Explorer</span></a>
+  <ul class="nav-links">
+    <li><a href="#home">Home</a></li>
+    <li><a href="#guides">Guides</a></li>
+    <li><a href="#cities">Cities</a></li>
+    <li><a href="#tools">Tools</a></li>
+    <li><a href="#weather">Weather</a></li>
+    <li><a href="#safety">Safety</a></li>
+    <li><a href="#enquiry">Enquiry</a></li>
+  </ul>
+  <button class="nav-hamburger" id="navHamburger" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<!-- ── MOBILE MENU ── -->
+<div class="mobile-menu" id="mobileMenu">
+  <button class="mobile-menu-close" id="mobileMenuClose">✕</button>
+  <a href="#home" class="mobile-nav-link">Home</a>
+  <a href="#guides" class="mobile-nav-link">Guides</a>
+  <a href="#cities" class="mobile-nav-link">Cities</a>
+  <a href="#tools" class="mobile-nav-link">Tools</a>
+  <a href="#weather" class="mobile-nav-link">Weather</a>
+  <a href="#safety" class="mobile-nav-link">Safety</a>
+  <a href="#enquiry" class="mobile-nav-link">Enquiry</a>
+</div>
+
+<!-- ── HOME / HERO ── -->
+<section id="home">
+  <div class="hero-bg"></div>
+  <div class="hero-overlay"></div>
+  <div class="hero-content">
+    <p class="hero-eyebrow">Travel Explorer — Est. 2024</p>
+    <h1>We went, so you know where to go.</h1>
+    <p>Curated travel guides with real prices, realistic itineraries, airport tips, safety notes, weather insights, and local recommendations.</p>
+    <div class="hero-btns">
+      <a href="#guides" class="btn-primary">Read Latest Guide</a>
+      <a href="#enquiry" class="btn-outline">Send Enquiry</a>
+    </div>
+  </div>
+  <div class="hero-scroll-hint">
+    <div class="scroll-line"></div>
+    <span>Explore</span>
+  </div>
+</section>
+
+<!-- ── GUIDES SECTION ── -->
+<section id="guides">
+  <div class="section-header">
+    <p class="section-label">Featured Guides</p>
+    <h2 class="section-title">Our Latest Discoveries</h2>
+    <p class="section-subtitle">Hand-picked destinations with everything you need to travel smarter.</p>
+  </div>
+  <div class="guides-grid">
+    <div class="guide-card">
+      <div class="guide-card-img"><img src="https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?w=800&q=80" alt="Tokyo" loading="lazy"></div>
+      <div class="guide-card-body">
+        <p class="guide-tag">Japan · 7h from Singapore</p>
+        <h3>Tokyo: The City That Never Sleeps on Tradition</h3>
+        <p>From Shibuya crossings to silent temple gardens — Tokyo is a masterclass in living between two worlds.</p>
+        <button class="btn-text" onclick="openModal('tokyo')">Read Guide →</button>
+      </div>
+    </div>
+    <div class="guide-card">
+      <div class="guide-card-img"><img src="https://images.unsplash.com/photo-1537996194471-e657df975ab4?w=800&q=80" alt="Bali" loading="lazy"></div>
+      <div class="guide-card-body">
+        <p class="guide-tag">Indonesia · 2.5h from Singapore</p>
+        <h3>Bali: Sacred Temples, Emerald Terraces & Ocean Sunsets</h3>
+        <p>The Island of Gods offers a rare combination of spiritual depth, natural beauty, and warm hospitality.</p>
+        <button class="btn-text" onclick="openModal('bali')">Read Guide →</button>
+      </div>
+    </div>
+    <div class="guide-card">
+      <div class="guide-card-img"><img src="https://images.unsplash.com/photo-1514282401047-d79a71a590e8?w=800&q=80" alt="Maldives" loading="lazy"></div>
+      <div class="guide-card-body">
+        <p class="guide-tag">Maldives · 4h from Singapore</p>
+        <h3>Maldives: Overwater Bliss at the Edge of the Indian Ocean</h3>
+        <p>Crystal lagoons, house reefs alive with marine life, and sunsets that feel painted by hand.</p>
+        <button class="btn-text" onclick="openModal('maldives')">Read Guide →</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── CITIES SECTION ── -->
+<section id="cities">
+  <div class="section-header">
+    <p class="section-label">Destinations</p>
+    <h2 class="section-title">Explore Our Cities</h2>
+    <p class="section-subtitle">Twelve handpicked destinations across Asia and beyond.</p>
+  </div>
+  <div class="cities-grid" id="citiesGrid"></div>
+</section>
+
+<!-- ── MODAL ── -->
+<div class="modal-overlay" id="modalOverlay" onclick="handleModalClick(event)">
+  <div class="modal-box">
+    <div class="modal-hero">
+      <img id="modalHeroImg" src="" alt="">
+      <div class="modal-hero-overlay"></div>
+      <div class="modal-hero-text">
+        <span id="modalCountry"></span>
+        <h2 id="modalTitle"></h2>
+      </div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-tabs" id="modalTabs"></div>
+    <div class="modal-content" id="modalContent"></div>
+  </div>
+</div>
+
+<!-- ── TRAVEL TOOLS ── -->
+<section id="tools">
+  <div class="section-header">
+    <p class="section-label">Travel Tools</p>
+    <h2 class="section-title">Plan Smarter</h2>
+    <p class="section-subtitle">Interactive tools to budget, pack, and plan your perfect trip.</p>
+  </div>
+  <div class="tools-tabs-nav">
+    <button class="tool-tab-btn active" onclick="switchTool('budget', this)">Budget Calculator</button>
+    <button class="tool-tab-btn" onclick="switchTool('packing', this)">Packing Checklist</button>
+    <button class="tool-tab-btn" onclick="switchTool('itinerary', this)">Itinerary Planner</button>
+  </div>
+
+  <!-- Budget Calculator -->
+  <div class="tool-panel active" id="tool-budget">
+    <div class="tool-card">
+      <div class="form-row">
+        <div class="form-group">
+          <label>Destination</label>
+          <select id="budgetDest">
+            <option value="seoul">Seoul, South Korea</option>
+            <option value="singapore">Singapore</option>
+            <option value="bali">Bali, Indonesia</option>
+            <option value="tokyo">Tokyo, Japan</option>
+            <option value="bangkok">Bangkok, Thailand</option>
+            <option value="hongkong">Hong Kong</option>
+            <option value="kl">Kuala Lumpur, Malaysia</option>
+            <option value="maldives">Maldives</option>
+            <option value="phuket">Phuket & Krabi, Thailand</option>
+            <option value="sydney">Sydney, Australia</option>
+            <option value="taipei">Taipei, Taiwan</option>
+            <option value="hanoi">Hanoi, Vietnam</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Number of Travellers</label>
+          <input type="number" id="budgetTravellers" value="2" min="1" max="20">
+        </div>
+        <div class="form-group">
+          <label>Number of Days</label>
+          <input type="number" id="budgetDays" value="5" min="1" max="60">
+        </div>
+        <div class="form-group">
+          <label>Daily Budget per Person (SGD)</label>
+          <input type="number" id="budgetPerPerson" value="150" min="1">
+        </div>
+      </div>
+      <button class="btn-action" onclick="calcBudget()">Calculate Total</button>
+      <div class="budget-result" id="budgetResult">
+        <h4>Estimated Trip Cost</h4>
+        <div class="amount" id="budgetAmount">SGD 0</div>
+        <p id="budgetBreakdown"></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Packing Checklist -->
+  <div class="tool-panel" id="tool-packing">
+    <div class="tool-card">
+      <div class="checklist-cats" id="checklistContainer"></div>
+      <button class="btn-action" onclick="resetChecklist()">Reset All</button>
+    </div>
+  </div>
+
+  <!-- Itinerary Planner -->
+  <div class="tool-panel" id="tool-itinerary">
+    <div class="tool-card">
+      <div class="itinerary-form">
+        <div class="form-group">
+          <label>Day</label>
+          <input type="number" id="itinDay" value="1" min="1" max="30">
+        </div>
+        <div class="form-group">
+          <label>Time</label>
+          <input type="text" id="itinTime" placeholder="e.g. 9:00 AM">
+        </div>
+        <div class="form-group">
+          <label>Activity</label>
+          <input type="text" id="itinActivity" placeholder="Activity name">
+        </div>
+        <div class="form-group full">
+          <label>Notes</label>
+          <input type="text" id="itinNotes" placeholder="Optional notes...">
+        </div>
+        <div class="form-group" style="align-self:end">
+          <button class="btn-action" onclick="addItineraryEntry()">Add</button>
+        </div>
+      </div>
+      <div id="itineraryList">
+        <div class="empty-state" id="itinEmpty">No activities yet. Add your first!</div>
+        <div class="itinerary-list" id="itinEntries"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── WEATHER SECTION ── -->
+<section id="weather">
+  <div class="section-header">
+    <p class="section-label" style="color:var(--gold)">Weather</p>
+    <h2 class="section-title">Check the Weather</h2>
+    <p class="section-subtitle">Get current conditions for any city before you fly.</p>
+  </div>
+  <div class="weather-search">
+    <input type="text" id="weatherInput" placeholder="Enter city name..." onkeypress="if(event.key==='Enter')checkWeather()">
+    <button onclick="checkWeather()">Search</button>
+  </div>
+  <div class="weather-quick-btns">
+    <button class="weather-quick-btn" onclick="checkWeatherCity('Seoul')">Seoul</button>
+    <button class="weather-quick-btn" onclick="checkWeatherCity('Singapore')">Singapore</button>
+    <button class="weather-quick-btn" onclick="checkWeatherCity('Bali')">Bali</button>
+    <button class="weather-quick-btn" onclick="checkWeatherCity('Tokyo')">Tokyo</button>
+    <button class="weather-quick-btn" onclick="checkWeatherCity('Bangkok')">Bangkok</button>
+    <button class="weather-quick-btn" onclick="checkWeatherCity('Hong Kong')">Hong Kong</button>
+    <button class="weather-quick-btn" onclick="checkWeatherCity('Kuala Lumpur')">Kuala Lumpur</button>
+    <button class="weather-quick-btn" onclick="checkWeatherCity('Male')">Maldives</button>
+    <button class="weather-quick-btn" onclick="checkWeatherCity('Phuket')">Phuket</button>
+    <button class="weather-quick-btn" onclick="checkWeatherCity('Sydney')">Sydney</button>
+    <button class="weather-quick-btn" onclick="checkWeatherCity('Taipei')">Taipei</button>
+    <button class="weather-quick-btn" onclick="checkWeatherCity('Hanoi')">Hanoi</button>
+  </div>
+  <div class="weather-error" id="weatherError"></div>
+  <div class="weather-result" id="weatherResult">
+    <div class="weather-city-name" id="wCity"></div>
+    <div class="weather-condition" id="wCondition"></div>
+    <div class="weather-temp"><span id="wTemp"></span><sup>°C</sup></div>
+    <div class="weather-details">
+      <div class="weather-detail"><span>Humidity</span><strong id="wHumidity">—</strong></div>
+      <div class="weather-detail"><span>Wind</span><strong id="wWind">—</strong></div>
+      <div class="weather-detail"><span>Feels Like</span><strong id="wFeels">—</strong></div>
+    </div>
+  </div>
+  <p class="weather-note">Powered by OpenWeather API. Add your API key in the script section to enable live data.</p>
+</section>
+
+<!-- ── SAFETY SECTION ── -->
+<section id="safety">
+  <div class="section-header">
+    <p class="section-label">Travel Safety</p>
+    <h2 class="section-title">Stay Safe, Travel Smart</h2>
+    <p class="section-subtitle">Know before you go — safety ratings and key tips for every destination.</p>
+  </div>
+  <div class="safety-grid" id="safetyGrid"></div>
+  <div class="general-safety">
+    <h3>General Travel Safety Tips</h3>
+    <div class="general-tips-grid">
+      <div class="gen-tip"><h5>Documents</h5><p>Always keep digital copies of your passport, visa, and travel insurance in a secure cloud folder.</p></div>
+      <div class="gen-tip"><h5>Money</h5><p>Split cash across different pockets. Use a travel card with low foreign transaction fees. Never flash large amounts.</p></div>
+      <div class="gen-tip"><h5>Health</h5><p>Check vaccination requirements 6–8 weeks before departure. Carry a basic medical kit and any prescription medications.</p></div>
+      <div class="gen-tip"><h5>Connectivity</h5><p>Buy a local SIM on arrival or get a travel eSIM. Share your itinerary with someone at home.</p></div>
+      <div class="gen-tip"><h5>Scams</h5><p>Be wary of overly friendly strangers, unofficial taxis, and unsolicited tour guides. Book transport through apps.</p></div>
+      <div class="gen-tip"><h5>Insurance</h5><p>Never travel without comprehensive travel insurance that covers medical evacuation, cancellations, and lost luggage.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ── ENQUIRY SECTION ── -->
+<section id="enquiry">
+  <div class="enquiry-wrap">
+    <div class="enquiry-info">
+      <p class="section-label">Get in Touch</p>
+      <h2>Let's Plan Your Perfect Trip</h2>
+      <p>Whether you need a custom itinerary, travel advice, or just want to know the best time to visit — our team is ready to help.</p>
+      <div class="enquiry-detail"><span>✈</span> Personalised itineraries for all budgets</div>
+      <div class="enquiry-detail"><span>🏨</span> Hotel & accommodation recommendations</div>
+      <div class="enquiry-detail"><span>📋</span> Visa & documentation guidance</div>
+      <div class="enquiry-detail"><span>📍</span> Local tips from travellers who've been there</div>
+    </div>
+    <div class="enquiry-form-box">
+      <div class="enquiry-success" id="enquirySuccess">
+        <div class="check-icon">✅</div>
+        <h3>Thank you!</h3>
+        <p>We've received your enquiry and will be in touch within 24 hours.</p>
+        <button class="btn-action" onclick="resetEnquiry()">Send Another Enquiry</button>
+      </div>
+      <form class="enquiry-form" id="enquiryForm" onsubmit="submitEnquiry(event)" novalidate>
+        <div class="form-row">
+          <div class="form-group" id="fg-name">
+            <label>Full Name *</label>
+            <input type="text" id="eqName" placeholder="Jane Smith">
+            <span class="form-error-msg">Please enter your full name.</span>
+          </div>
+          <div class="form-group" id="fg-email">
+            <label>Email Address *</label>
+            <input type="email" id="eqEmail" placeholder="jane@email.com">
+            <span class="form-error-msg">Please enter a valid email.</span>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Phone Number</label>
+            <input type="tel" id="eqPhone" placeholder="+65 9123 4567">
+          </div>
+          <div class="form-group" id="fg-dest">
+            <label>Destination of Interest *</label>
+            <select id="eqDest">
+              <option value="">— Select a destination —</option>
+              <option>Seoul, South Korea</option>
+              <option>Singapore</option>
+              <option>Bali, Indonesia</option>
+              <option>Tokyo, Japan</option>
+              <option>Bangkok, Thailand</option>
+              <option>Hong Kong</option>
+              <option>Kuala Lumpur, Malaysia</option>
+              <option>Maldives</option>
+              <option>Phuket & Krabi, Thailand</option>
+              <option>Sydney, Australia</option>
+              <option>Taipei, Taiwan</option>
+              <option>Hanoi, Vietnam</option>
+              <option>Other</option>
+            </select>
+            <span class="form-error-msg">Please select a destination.</span>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Travel Date</label>
+            <input type="date" id="eqDate">
+          </div>
+          <div class="form-group">
+            <label>Number of Travellers</label>
+            <input type="number" id="eqTravellers" value="2" min="1" max="50">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group full">
+            <label>Message</label>
+            <textarea id="eqMessage" rows="4" placeholder="Tell us about your travel plans, preferences, or questions..."></textarea>
+          </div>
+        </div>
+        <button type="submit" class="btn-action" style="width:100%;padding:1rem">Send Enquiry</button>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- ── FOOTER ── -->
+<footer>
+  <div class="footer-logo">Travel<span>Explorer</span></div>
+  <p class="footer-copy">© 2024 Travel Explorer. We went, so you know where to go.</p>
+  <div class="footer-links">
+    <a href="#guides">Guides</a>
+    <a href="#cities">Cities</a>
+    <a href="#tools">Tools</a>
+    <a href="#enquiry">Contact</a>
+  </div>
+</footer>
+
+<script>
+// ══════════════════════════════════════════
+//  CITY DATA
+// ══════════════════════════════════════════
+const cityData = [
+  {
+    id: 'seoul', name: 'Seoul', country: 'South Korea',
+    description: 'Electric megacity of K-pop, ancient palaces, and sensational street food.',
+    flightTime: '6.5h from Singapore', budget: 'SGD 100–180/day', season: 'Apr–Jun, Sep–Nov',
+    image: 'https://images.unsplash.com/photo-1548115184-bc6544d06a58?w=800&q=80',
+    overview: 'Seoul is a city of thrilling contrasts — gleaming skyscrapers rise beside thousand-year-old palaces, and neon-lit street food alleys wind through serene Buddhist temples. The world\'s fastest internet speeds power a culture of innovation, K-beauty, and addictive cuisine.',
+    itinerary: {
+      day1: ['Visit Gyeongbokgung Palace at opening (9am)', 'Stroll through Bukchon Hanok Village', 'Lunch at a local jjigae restaurant', 'Explore Insadong arts district', 'Dinner in Myeongdong — try tteokbokki and hotteok'],
+      day2: ['Morning at N Seoul Tower, Namsan Hill', 'Explore Hongdae — street art, cafes, vintage shops', 'Afternoon at Lotte World Tower observation deck', 'Evening in Gangnam — dinner & nightlife'],
+      day3: ['Day trip to the DMZ (book in advance)', 'Return for Dongdaemun Design Plaza at dusk', 'Farewell dinner — Korean BBQ in Mapo-gu']
+    },
+    food: ['Samgyeopsal (grilled pork belly) at Maple Tree House', 'Bibimbap at Jeonju Jungang Restaurant', 'Haemul Pajeon (seafood pancake) in Noryangjin Fish Market', 'Bingsu shaved ice at Sulbing Myeongdong'],
+    transport: ['T-money card for metro & buses (load at any convenience store)', 'KTX train for day trips to Busan or Gyeongju', 'Kakao T app for taxis — English-friendly', 'Airport Railroad (AREX) from Incheon — 43 min to city centre'],
+    costs: { flight: 'SGD 250–500', hotel: 'SGD 80–160/night', food: 'SGD 30–60/day', total: 'SGD 1,000–2,200 (5 days, 2 pax)' },
+    safety: ['Generally very safe for solo travellers', 'Beware of counterfeit goods in markets', 'Carry a translation app — English signage limited outside tourist areas', 'Pickpocketing rare but watch bags in Myeongdong'],
+    photoSpots: ['Gyeongbokgung Palace at sunrise', 'Bukchon Hanok Village rooftops', 'N Seoul Tower at night', 'Ihwa Mural Village']
+  },
+  {
+    id: 'singapore', name: 'Singapore', country: 'Singapore',
+    description: 'The Lion City — a dazzling fusion of cultures, world-class food, and sleek modernity.',
+    flightTime: '0h (local)', budget: 'SGD 80–200/day', season: 'Year-round',
+    image: 'https://images.unsplash.com/photo-1525625293386-3f8f99389edd?w=800&q=80',
+    overview: 'Singapore punches far above its size. In a single afternoon you can walk from a Chinese temple to a Little India spice market to a colonial British district. World-class food courts, a pristine MRT system, and year-round sunshine make it the perfect hub for Southeast Asian travel.',
+    itinerary: {
+      day1: ['Gardens by the Bay — arrive at dusk for Supertree light show', 'Marina Bay Sands Skypark observation deck', 'Hawker dinner at Maxwell Food Centre', 'Chinatown night walk'],
+      day2: ['Morning at Orchard Road shopping', 'Singapore Botanic Gardens UNESCO site', 'Lunch at Tiong Bahru — trendy cafes & local bakeries', 'Sentosa Island — Universal Studios or beaches'],
+      day3: ['Little India — Sri Veeramakaliamman Temple', 'Kampong Glam & Arab Street', 'Haji Lane boutiques', 'Dinner at Lau Pa Sat hawker centre']
+    },
+    food: ['Hainanese Chicken Rice at Tian Tian (Maxwell)', 'Char Kway Teow at Hill Street', 'Chilli Crab at Long Beach Seafood', 'Laksa at 328 Katong Laksa'],
+    transport: ['EZ-Link card for MRT and buses', 'Grab app for taxis', 'MRT from Changi Airport — 30 min to city', 'Walking is viable in many districts'],
+    costs: { flight: 'N/A (local)', hotel: 'SGD 120–250/night', food: 'SGD 15–60/day', total: 'SGD 600–1,500 (5 days, 2 pax)' },
+    safety: ['Extremely safe — one of the safest cities globally', 'Strict laws: no chewing gum, jaywalking fined', 'Tap water is safe to drink', 'Emergency number: 999'],
+    photoSpots: ['Marina Bay Sands infinity pool', 'Gardens by the Bay Supertrees', 'Jewel Changi Airport waterfall', 'Merlion Park at night']
+  },
+  {
+    id: 'bali', name: 'Bali', country: 'Indonesia',
+    description: 'Island of gods — terraced rice fields, sacred temples, and breathtaking ocean sunsets.',
+    flightTime: '2.5h from Singapore', budget: 'SGD 60–120/day', season: 'May–Sep',
+    image: 'https://images.unsplash.com/photo-1537996194471-e657df975ab4?w=800&q=80',
+    overview: 'Bali offers a rare combination of spiritual depth and natural beauty. Rice terraces cascade down hillsides, ancient Hindu temples perch on sea cliffs, and the warm Balinese spirit of hospitality wraps everything in warmth. Whether you seek yoga retreats in Ubud or surf breaks in Canggu, Bali delivers.',
+    itinerary: {
+      day1: ['Arrive & settle in Ubud', 'Tegallalang Rice Terraces at sunrise', 'Afternoon spa treatment', 'Ubud Palace & traditional Kecak dance evening'],
+      day2: ['Tanah Lot Temple at sunrise', 'Drive through Jatiluwih UNESCO rice terraces', 'Visit Tirta Empul holy spring temple', 'Sunset at Uluwatu cliff temple'],
+      day3: ['Morning surf lesson in Kuta or Canggu', 'Beach club afternoon at Potato Head or Ku De Ta', 'Seminyak sunset dinner', 'Night market in Legian']
+    },
+    food: ['Nasi Goreng (fried rice) everywhere', 'Babi Guling (suckling pig) at Ibu Oka', 'Fresh seafood BBQ at Jimbaran Bay', 'Sate Lilit at Warung Sopa'],
+    transport: ['Rent a scooter (IDR 60,000–80,000/day) for flexibility', 'GoJek/Grab app for affordable rides', 'Bluebird taxis for metered fares', 'Hire a private driver for day trips (~SGD 50–70/day)'],
+    costs: { flight: 'SGD 150–350', hotel: 'SGD 40–150/night', food: 'SGD 15–40/day', total: 'SGD 600–1,400 (5 days, 2 pax)' },
+    safety: ['Generally safe but petty theft occurs in tourist areas', 'Watch for drink spiking in party areas', 'Always negotiate prices before getting in a taxi without meter', 'Respect temple dress codes — sarong required'],
+    photoSpots: ['Tegallalang Rice Terraces', 'Gates of Heaven at Lempuyang Temple', 'Tanah Lot at sunset', 'Nungnung Waterfall']
+  },
+  {
+    id: 'tokyo', name: 'Tokyo', country: 'Japan',
+    description: 'Where ancient tradition meets hyper-modern innovation — unlike any city on earth.',
+    flightTime: '7h from Singapore', budget: 'SGD 150–250/day', season: 'Mar–May, Oct–Nov',
+    image: 'https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?w=800&q=80',
+    overview: 'Tokyo is a city that rewards the curious. Wander from neon-lit Akihabara to the hushed stone paths of Yanaka; from a ¥600 convenience store sushi to a three-Michelin-star dinner. The city is simultaneously the future and a living museum of Japanese tradition.',
+    itinerary: {
+      day1: ['Shinjuku Gyoen National Garden (cherry blossoms in spring)', 'Harajuku — Takeshita Street & Meiji Shrine', 'Shibuya Scramble Crossing at rush hour', 'Dinner in Shinjuku Golden Gai izakayas'],
+      day2: ['Asakusa — Senso-ji Temple at dawn', 'Tokyo National Museum', 'Akihabara electronics & anime district', 'Ueno Park stroll', 'Dinner at a conveyor-belt sushi restaurant'],
+      day3: ['teamLab Planets or Borderless digital art', 'Roppongi Hills — Mori Art Museum', 'Tokyo Tower at sunset', 'Ginza luxury shopping', 'Farewell dinner — omakase or ramen']
+    },
+    food: ['Ramen at Ichiran or Fuunji', 'Sushi breakfast at Tsukiji Outer Market', 'Tonkatsu at Maisen Aoyama', 'Yakitori in Memory Lane (Omoide Yokocho), Shinjuku'],
+    transport: ['Suica/Pasmo IC card for all trains, buses & vending machines', 'JR Pass if travelling to Kyoto/Osaka', 'Narita Express (N\'EX) or Limousine Bus from airport', 'Google Maps works perfectly for Tokyo transit'],
+    costs: { flight: 'SGD 400–700', hotel: 'SGD 100–200/night', food: 'SGD 40–80/day', total: 'SGD 1,500–3,000 (5 days, 2 pax)' },
+    safety: ['Exceptionally safe — one of the safest megacities globally', 'Lost items frequently returned to police', 'Earthquakes are possible — know the emergency exits', 'Tap water is safe to drink'],
+    photoSpots: ['Shibuya Scramble Crossing from Starbucks', 'Senso-ji Temple at dawn', 'Shinjuku at night from Park Hyatt', 'teamLab digital art installations']
+  },
+  {
+    id: 'bangkok', name: 'Bangkok', country: 'Thailand',
+    description: 'A sensory explosion of gilded temples, floating markets, and world-famous street food.',
+    flightTime: '2.5h from Singapore', budget: 'SGD 60–100/day', season: 'Nov–Feb',
+    image: 'https://images.unsplash.com/photo-1508009603885-50cf7c579365?w=800&q=80',
+    overview: 'Bangkok overwhelms the senses in the best possible way. The Grand Palace shimmers under tropical sun; longtail boats tear down the Chao Phraya; the night markets sizzle with pad thai. Bangkok is where world-class restaurants sit beside street carts serving better food for a fraction of the price.',
+    itinerary: {
+      day1: ['Grand Palace & Wat Phra Kaew (arrive early)', 'Wat Pho — Reclining Buddha', 'Chao Phraya River ferry to Wat Arun', 'Khao San Road evening'],
+      day2: ['Chatuchak Weekend Market (Sat/Sun)', 'Jim Thompson House', 'Siam area — Siam Paragon & MBK', 'Rooftop bar at Lebua State Tower'],
+      day3: ['Damnoen Saduak Floating Market (early departure)', 'Amphawa Floating Market', 'Return to Sukhumvit for street food & nightlife']
+    },
+    food: ['Pad Thai at Thip Samai (original)', 'Tom Yum Goong at P\'Aor', 'Mango Sticky Rice at Kor Panich', 'Green curry at any local restaurant'],
+    transport: ['BTS Skytrain & MRT for city centre', 'Grab app for metered rides', 'Tuk-tuks — negotiate price before riding', 'Airport Rail Link — 30 min from Suvarnabhumi'],
+    costs: { flight: 'SGD 100–300', hotel: 'SGD 50–130/night', food: 'SGD 15–40/day', total: 'SGD 600–1,200 (5 days, 2 pax)' },
+    safety: ['Generally safe for tourists', 'Taxi scams common — use Grab app instead', 'Respect royal family — lèse-majesté laws are serious', 'Keep valuables secured in crowded markets'],
+    photoSpots: ['Wat Arun at sunrise', 'Grand Palace courtyard', 'Chao Phraya River at dusk', 'Khao San Road neon lights']
+  },
+  {
+    id: 'hongkong', name: 'Hong Kong', country: 'SAR China',
+    description: 'Asia\'s world city — finance, dim sum, dramatic harbour views, and relentless energy.',
+    flightTime: '3.5h from Singapore', budget: 'SGD 120–200/day', season: 'Oct–Dec',
+    image: 'https://images.unsplash.com/photo-1536599018102-9f803c140fc1?w=800&q=80',
+    overview: 'Hong Kong packs extraordinary density into every square kilometre. Skyscraper canyons descend to typhoon shelters; mountain hiking trails overlook one of the world\'s most dramatic skylines. The food scene is unmatched in Asia — from Michelin-starred dim sum to dai pai dong street stalls.',
+    itinerary: {
+      day1: ['Victoria Peak via Peak Tram at sunrise', 'Central district walk — PMQ & Soho', 'Star Ferry crossing to Kowloon', 'Temple Street Night Market', 'Symphony of Lights from Tsim Sha Tsui promenade'],
+      day2: ['Dim sum breakfast in Central', 'Man Mo Temple', 'Tai O fishing village day trip (Lantau Island)', 'Tian Tan Buddha', 'Mong Kok night markets'],
+      day3: ['Stanley Market & beach', 'Repulse Bay', 'Happy Valley Racecourse (race nights)', 'Wan Chai bar district']
+    },
+    food: ['Dim sum at Tim Ho Wan (world\'s cheapest Michelin star)', 'Wonton noodles at Mak\'s Noodle', 'Char siu pork at Joy Hing', 'Egg tarts at Tai Cheong Bakery'],
+    transport: ['Octopus card for MTR, buses, ferries, even 7-Eleven', 'Airport Express — 24 min to Hong Kong Station', 'Star Ferry — classic harbour crossing HKD 2.70', 'Double-decker trams (ding ding) in Hong Kong Island'],
+    costs: { flight: 'SGD 200–450', hotel: 'SGD 100–250/night', food: 'SGD 30–80/day', total: 'SGD 1,000–2,500 (5 days, 2 pax)' },
+    safety: ['Very safe city overall', 'Be alert in very crowded areas for pickpocketing', 'Extreme heat & humidity in summer', 'Typhoon season: May–November — check warnings'],
+    photoSpots: ['Victoria Peak Lookout at night', 'Star Ferry with skyline backdrop', 'Choi Hung Estate rainbow apartments', 'Tai O stilt houses']
+  },
+  {
+    id: 'kl', name: 'Kuala Lumpur', country: 'Malaysia',
+    description: 'Twin towers, hawker heaven, colonial heritage, and incredible diversity — all in one city.',
+    flightTime: '1h from Singapore', budget: 'SGD 50–100/day', season: 'May–Jul, Dec–Feb',
+    image: 'https://images.unsplash.com/photo-1596422846543-75c6fc197f07?w=800&q=80',
+    overview: 'KL is Southeast Asia\'s most underrated capital. The Petronas Towers are a genuine architectural marvel; the Batu Caves Hindu shrine is unlike anything in the region; and the hawker food scene — Malay, Chinese, Indian, fused — rivals any culinary city in Asia at a fraction of the cost.',
+    itinerary: {
+      day1: ['Petronas Twin Towers bridge (book ahead)', 'KLCC Park morning walk', 'Bukit Bintang shopping — Pavilion & Lot 10', 'Jalan Alor Street Food Night Market'],
+      day2: ['Batu Caves — arrive early to beat crowds', 'Little India — Brickfields', 'Central Market handicrafts', 'Chinatown Petaling Street night market'],
+      day3: ['Forest Research Institute Malaysia (FRIM)', 'KL Tower & sky box', 'Bangsar neighbourhood — brunch & boutiques', 'Departure']
+    },
+    food: ['Nasi Lemak at Village Park', 'Char Kway Teow in Petaling Street', 'Roti Canai at breakfast anywhere', 'Satay Kajang at Hj Samuri'],
+    transport: ['LRT/MRT/Monorail — integrated rail network', 'Grab app is essential', 'KLIA Ekspres from airport — 28 min', 'Day trips to Malacca or Genting by bus/car'],
+    costs: { flight: 'SGD 50–200', hotel: 'SGD 50–130/night', food: 'SGD 10–30/day', total: 'SGD 400–900 (5 days, 2 pax)' },
+    safety: ['Generally safe, petty crime in some tourist areas', 'Use Grab — street taxis can overcharge', 'Bag-snatching reported in some areas — be aware', 'Emergency: 999'],
+    photoSpots: ['Petronas Towers at blue hour', 'Batu Caves staircase with statue', 'KL Bird Park', 'Street art in Chinatown']
+  },
+  {
+    id: 'maldives', name: 'Maldives', country: 'Maldives',
+    description: 'Overwater bungalows, bioluminescent beaches, and the clearest water on earth.',
+    flightTime: '4h from Singapore', budget: 'SGD 300–600/day', season: 'Nov–Apr',
+    image: 'https://images.unsplash.com/photo-1514282401047-d79a71a590e8?w=800&q=80',
+    overview: 'The Maldives is 26 coral atolls scattered across the Indian Ocean — 1,200 islands of which only 200 are inhabited. The water clarity is surreal; you can see the sandy bottom at 20 metres. Whether you stay in a budget guesthouse on a local island or a private villa resort, the ocean is the star.',
+    itinerary: {
+      day1: ['Arrive Malé, speedboat to island resort', 'Snorkelling at house reef (afternoon)', 'Overwater bungalow sunset'],
+      day2: ['Sunrise kayaking', 'Scuba diving or PADI course', 'Sandbank picnic lunch', 'Bioluminescent beach walk at night'],
+      day3: ['Dolphin watching cruise', 'Manta ray snorkelling excursion', 'Spa treatment', 'Farewell sunset dinner on the beach']
+    },
+    food: ['Fresh tuna — grilled, smoked, or raw', 'Mas huni (tuna & coconut breakfast)', 'Garudhiya (fish broth) with rice', 'Fresh coconut from the tree'],
+    transport: ['Speedboat transfers from Malé airport', 'Seaplane transfers for remote atolls (spectacular views)', 'Dhow boat for local island hopping', 'Maldivian Airlines for inter-atoll domestic flights'],
+    costs: { flight: 'SGD 400–800', hotel: 'SGD 150–600+/night', food: 'SGD 30–80/day (local island) or included in resort', total: 'SGD 2,500–6,000+ (5 days, 2 pax)' },
+    safety: ['Extremely safe destination', 'No violent crime in tourist areas', 'Strong currents — follow resort dive/snorkel guidelines', 'Alcohol only available in resort areas (not local islands)'],
+    photoSpots: ['Bioluminescent beach at night', 'Aerial view of sandbanks from seaplane', 'Overwater bungalow at sunrise', 'Underwater photography at house reef']
+  },
+  {
+    id: 'phuket', name: 'Phuket & Krabi', country: 'Thailand',
+    description: 'Emerald bays, towering limestone karsts, and the most beautiful beaches in Southeast Asia.',
+    flightTime: '2h from Singapore', budget: 'SGD 80–150/day', season: 'Nov–Apr',
+    image: 'https://images.unsplash.com/photo-1589394816000-ac36bd60e8cf?w=800&q=80',
+    overview: 'Phuket and Krabi share the Andaman coast — two hours apart but worlds of their own. Phuket is the nightlife and resort hub; Krabi is the destination for karst climbing, sea kayaking, and island-hopping serenity. Together they cover every mood of a Thai beach holiday.',
+    itinerary: {
+      day1: ['Arrive Phuket — Patong Beach', 'Bangla Road night market', 'Big Buddha viewpoint at sunset'],
+      day2: ['Phi Phi Islands day trip by speedboat', 'Maya Bay snorkelling', 'Phi Phi Don beach lunch', 'Return to Phuket for dinner'],
+      day3: ['Transfer to Krabi (ferry or minibus)', 'Railay Beach by longtail boat', 'Rock climbing or kayaking', 'Four Islands sunset snorkel tour']
+    },
+    food: ['Tom Kha Gai at beachside restaurants', 'Fresh grilled seafood at Rawai Beach', 'Roti mataba street crepes', 'Som Tum (papaya salad) everywhere'],
+    transport: ['Grab available in Phuket city', 'Songthaew shared taxis (fixed routes)', 'Longtail boats to beaches and islands', 'Phuket Airport — 45 min to Patong'],
+    costs: { flight: 'SGD 150–350', hotel: 'SGD 60–180/night', food: 'SGD 20–50/day', total: 'SGD 800–1,800 (5 days, 2 pax)' },
+    safety: ['Generally safe — tourist police present', 'Jet ski scam notorious in Phuket — avoid or document everything', 'Strong rip currents May–Oct — heed beach flags', 'Ladyboy scam zones — stay aware in Patong'],
+    photoSpots: ['Maya Bay, Phi Phi Island', 'Railay Beach at low tide', 'Big Buddha at dusk', 'Phang Nga Bay sea caves']
+  },
+  {
+    id: 'sydney', name: 'Sydney', country: 'Australia',
+    description: 'Iconic opera house, sparkling harbour, golden beaches, and an outdoor lifestyle like nowhere else.',
+    flightTime: '8h from Singapore', budget: 'SGD 200–350/day', season: 'Sep–Nov, Mar–May',
+    image: 'https://images.unsplash.com/photo-1506973035872-a4ec16b8e8d9?w=800&q=80',
+    overview: 'Sydney is Australia\'s most photogenic city — the Opera House and Harbour Bridge pair up for one of the world\'s great urban vistas. Beyond the icons, Sydney rewards exploration: coastal cliff walks, world-class surf beaches, vibrant neighbourhoods like Surry Hills and Newtown, and some of the best coffee culture on earth.',
+    itinerary: {
+      day1: ['Sydney Opera House tour', 'Circular Quay & The Rocks historic district', 'Harbour Bridge climb (BridgeClimb — book ahead)', 'Darling Harbour evening'],
+      day2: ['Bondi Beach morning swim', 'Bondi to Coogee coastal cliff walk (6km)', 'Brunch in Bondi — Porch & Parlour or Icebergs dining', 'Surry Hills for dinner & cocktails'],
+      day3: ['Blue Mountains day trip — Scenic World & Three Sisters', 'Featherdale Wildlife Park (optional)', 'Return for rooftop bar sunset in CBD']
+    },
+    food: ['Seafood at Flying Fish, Pyrmont', 'Flat white at Mecca Espresso', 'Fish & chips at Doyles on the Beach, Watson\'s Bay', 'Dumplings in Chinatown — China Doll or Din Tai Fung'],
+    transport: ['Opal card for trains, buses, ferries', 'Ferry from Circular Quay — scenic & practical', 'Uber/taxis widely available', 'Airport train — 13 min to Central Station'],
+    costs: { flight: 'SGD 500–900', hotel: 'SGD 160–300/night', food: 'SGD 60–120/day', total: 'SGD 2,500–4,500 (5 days, 2 pax)' },
+    safety: ['Very safe destination', 'Swim between the flags at patrolled beaches always', 'UV index is extreme — high SPF sunscreen essential', 'Bushfire smoke can affect air quality Oct–Feb in some years'],
+    photoSpots: ['Sydney Opera House from Mrs Macquarie\'s Chair', 'Bondi Icebergs pool', 'Bondi to Coogee track', 'Harbour Bridge from Blues Point Reserve']
+  },
+  {
+    id: 'taipei', name: 'Taipei', country: 'Taiwan',
+    description: 'Night markets, hot springs, misty mountains, bubble tea culture, and genuine friendliness.',
+    flightTime: '4.5h from Singapore', budget: 'SGD 80–140/day', season: 'Oct–Dec',
+    image: 'https://images.unsplash.com/photo-1470093851219-69951fcbb533?w=800&q=80',
+    overview: 'Taipei is one of Asia\'s most liveable and visitor-friendly cities. The food scene is extraordinary — from the iconic Shilin Night Market to the refined tea houses of Maokong. Taipei 101 still stuns, the old city quarter of Dadaocheng hides extraordinary heritage, and a day trip to Jiufen feels like stepping into a Studio Ghibli film.',
+    itinerary: {
+      day1: ['Taipei 101 — observation deck & basement gourmet', 'Sun Yat-sen Memorial Hall', 'Da\'an Park afternoon', 'Raohe Street Night Market'],
+      day2: ['Shilin Night Market (open from afternoon)', 'National Palace Museum (half day)', 'Zhongshan District — creative galleries & cafes', 'Ximending shopping district evening'],
+      day3: ['Jiufen & Jinguashi day trip', 'Old street, tea house views, gold museum', 'Return for Maokong Gondola & mountain tea house', 'Farewell hotpot dinner']
+    },
+    food: ['Beef noodle soup at Jin Feng', 'Oyster omelette at Shilin Night Market', 'Din Tai Fung xiaolongbao (soup dumplings)', 'Egg cake (鷄蛋糕) at any night market'],
+    transport: ['EasyCard for MRT, buses & YouBike rental', 'MRT is modern, clean, and English-signposted', 'Taoyuan Airport MRT — 35 min to Taipei Station', 'Uber available throughout the city'],
+    costs: { flight: 'SGD 250–500', hotel: 'SGD 70–160/night', food: 'SGD 20–50/day', total: 'SGD 900–2,000 (5 days, 2 pax)' },
+    safety: ['Very safe — Taiwan consistently ranked among safest in Asia', 'Earthquakes occur — follow standard safety guidance', 'Typhoon season July–October', 'Scooter traffic is heavy — cross at pedestrian lights only'],
+    photoSpots: ['Jiufen Old Street at night (lanterns)', 'Taipei 101 from Da\'an', 'Elephant Mountain night hike', 'Maokong tea house mountain views']
+  },
+  {
+    id: 'hanoi', name: 'Hanoi', country: 'Vietnam',
+    description: 'Ancient capital of Vietnam — French colonial elegance, Hoan Kiem Lake, and legendary pho.',
+    flightTime: '2.5h from Singapore', budget: 'SGD 40–80/day', season: 'Oct–Apr',
+    image: 'https://images.unsplash.com/photo-1557750255-c76072a7aad1?w=800&q=80',
+    overview: 'Hanoi moves at two speeds: the frenetic scooter chaos of the Old Quarter and the serene stillness of Hoan Kiem Lake at dawn. French colonial architecture lines broad boulevards; street vendors ladle pho at 6am; the city operates with a rhythm entirely its own. Hanoi is the ideal base for Halong Bay and Ninh Binh.',
+    itinerary: {
+      day1: ['Hoan Kiem Lake sunrise walk', 'Ngoc Son Temple on the lake', 'Old Quarter maze walk — 36 guild streets', 'Bun Cha lunch on the street', 'Beer Hoi Corner evening (corner of Ta Hien)'],
+      day2: ['Halong Bay day tour or overnight cruise (book ahead)', 'Kayaking among limestone karsts', 'Floating fishing village visit'],
+      day3: ['Ho Chi Minh Mausoleum (closed Mon & Fri)', 'Temple of Literature', 'Fine Arts Museum', 'West Lake area — Tay Ho for sunset & seafood']
+    },
+    food: ['Pho Bo (beef noodle) at Pho Gia Truyen', 'Bun Cha (grilled pork vermicelli) — Huong Lien made famous by Obama & Bourdain', 'Banh Mi from street cart', 'Cha Ca La Vong (turmeric fish with dill)'],
+    transport: ['Grab app for taxis — essential', 'Cyclo (bicycle rickshaw) for Old Quarter sightseeing', 'Bus 86 from Noi Bai Airport — budget option', 'Overnight train to Sapa or Hue'],
+    costs: { flight: 'SGD 150–300', hotel: 'SGD 30–100/night', food: 'SGD 10–25/day', total: 'SGD 450–900 (5 days, 2 pax)' },
+    safety: ['Generally safe — low violent crime', 'Bag-snatching by motorbike is the main threat — keep bags on building-side', 'Only use metered taxis or Grab app', 'Traffic crossing requires confidence — keep steady pace'],
+    photoSpots: ['Hoan Kiem Lake at dawn with fog', 'Train Street (Hang Bong)', 'Long Bien Bridge at sunset', 'Halong Bay limestone karsts']
+  }
+];
+
+// ══════════════════════════════════════════
+//  SAFETY DATA
+// ══════════════════════════════════════════
+const safetyData = [
+  { id:'seoul', name:'Seoul', level:'safe', badge:'Safe', tips:['Low violent crime rate','Watch bags in Myeongdong','Nightlife areas generally safe','Carry translation app'], emergency:'112 (Police) · 119 (Fire/Ambulance)' },
+  { id:'singapore', name:'Singapore', level:'safe', badge:'Very Safe', tips:['One of the world\'s safest cities','Strict laws — no littering or jaywalking','Tap water is drinkable','CCTV throughout public areas'], emergency:'999 (Police) · 995 (Ambulance)' },
+  { id:'bali', name:'Bali', level:'moderate', badge:'Moderate', tips:['Petty theft in tourist areas','Negotiate taxi fares upfront','Drink-spiking reported in Kuta','Temple dress codes enforced'], emergency:'110 (Police) · 118 (Ambulance)' },
+  { id:'tokyo', name:'Tokyo', level:'safe', badge:'Very Safe', tips:['Extremely safe megacity','Lost items frequently returned','Be prepared for earthquakes','Tap water is safe'], emergency:'110 (Police) · 119 (Fire/Ambulance)' },
+  { id:'bangkok', name:'Bangkok', level:'moderate', badge:'Moderate', tips:['Grab app instead of metered taxis','Respect royal family — strict laws','Watch for gem & tour scams','Keep valuables secured in markets'], emergency:'191 (Police) · 1669 (Ambulance)' },
+  { id:'hongkong', name:'Hong Kong', level:'safe', badge:'Safe', tips:['Very safe overall','Typhoon season May–Nov','Heat & humidity in summer','Pickpocketing in crowds'], emergency:'999 (Police/Fire/Ambulance)' },
+  { id:'kl', name:'Kuala Lumpur', level:'moderate', badge:'Moderate', tips:['Petty crime in some areas','Bag-snatching reported','Use Grab for transport','Avoid walking alone at night in some areas'], emergency:'999 (Police) · 999 (Ambulance)' },
+  { id:'maldives', name:'Maldives', level:'safe', badge:'Safe', tips:['Extremely safe tourist destination','No alcohol on local islands','Strong currents — follow resort guidance','Sunscreen — UV is extreme'], emergency:'119 (Police) · 102 (Ambulance)' },
+  { id:'phuket', name:'Phuket & Krabi', level:'moderate', badge:'Moderate', tips:['Jet ski scams in Phuket','Heed beach flags for rip currents','Red flag = no swimming','Tuk-tuk overcharging common'], emergency:'191 (Police) · 1669 (Ambulance)' },
+  { id:'sydney', name:'Sydney', level:'safe', badge:'Very Safe', tips:['Swim between the flags at beaches','Extreme UV — wear sunscreen','Very low violent crime','Emergency services respond quickly'], emergency:'000 (Police/Fire/Ambulance)' },
+  { id:'taipei', name:'Taipei', level:'safe', badge:'Very Safe', tips:['Among Asia\'s safest cities','Earthquake-aware travel','Heavy scooter traffic — be careful crossing','Typhoons July–October'], emergency:'110 (Police) · 119 (Ambulance)' },
+  { id:'hanoi', name:'Hanoi', level:'moderate', badge:'Moderate', tips:['Bag-snatching by motorbike','Use Grab app only','Chaotic traffic — cross steadily','Only drink bottled water'], emergency:'113 (Police) · 115 (Ambulance)' }
+];
+
+// ══════════════════════════════════════════
+//  RENDER CITY CARDS
+// ══════════════════════════════════════════
+function renderCityCards() {
+  const grid = document.getElementById('citiesGrid');
+  grid.innerHTML = cityData.map(c => `
+    <div class="city-card">
+      <div class="city-card-img"><img src="${c.image}" alt="${c.name}" loading="lazy"></div>
+      <div class="city-card-body">
+        <p class="city-country">${c.country}</p>
+        <h3>${c.name}</h3>
+        <p>${c.description}</p>
+        <div class="city-meta">
+          <div class="city-meta-item"><span>✈</span><span>${c.flightTime}</span></div>
+          <div class="city-meta-item"><span>💰</span><span>${c.budget}</span></div>
+          <div class="city-meta-item"><span>🌤</span><span>Best: ${c.season}</span></div>
+        </div>
+        <button class="btn-card" onclick="openModal('${c.id}')">View Guide</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+// ══════════════════════════════════════════
+//  MODAL
+// ══════════════════════════════════════════
+function openModal(id) {
+  const c = cityData.find(x => x.id === id);
+  if (!c) return;
+  document.getElementById('modalHeroImg').src = c.image;
+  document.getElementById('modalHeroImg').alt = c.name;
+  document.getElementById('modalTitle').textContent = c.name;
+  document.getElementById('modalCountry').textContent = c.country;
+
+  const tabs = ['Overview','Itinerary','Food','Transport','Costs','Safety','Photo Spots'];
+  document.getElementById('modalTabs').innerHTML = tabs.map((t,i) =>
+    `<button class="modal-tab${i===0?' active':''}" onclick="switchModalTab(this,${i})">${t}</button>`
+  ).join('');
+
+  document.getElementById('modalContent').innerHTML = `
+    <div class="tab-panel active" id="mp0"><h4>About ${c.name}</h4><p>${c.overview}</p></div>
+    <div class="tab-panel" id="mp1">
+      ${[1,2,3].map(d=>`<div class="itinerary-day"><h5>Day ${d}</h5><ul>${c.itinerary[`day${d}`].map(i=>`<li>${i}</li>`).join('')}</ul></div>`).join('')}
+    </div>
+    <div class="tab-panel" id="mp2"><h4>Must-Try Food</h4><ul>${c.food.map(f=>`<li>${f}</li>`).join('')}</ul></div>
+    <div class="tab-panel" id="mp3"><h4>Getting Around</h4><ul>${c.transport.map(t=>`<li>${t}</li>`).join('')}</ul></div>
+    <div class="tab-panel" id="mp4">
+      <h4>Estimated Costs</h4>
+      <table class="cost-table">
+        <tr><td>Return Flights</td><td>${c.costs.flight}</td></tr>
+        <tr><td>Hotel / Night</td><td>${c.costs.hotel}</td></tr>
+        <tr><td>Food / Day</td><td>${c.costs.food}</td></tr>
+        <tr class="cost-total"><td>Total Estimate</td><td>${c.costs.total}</td></tr>
+      </table>
+    </div>
+    <div class="tab-panel" id="mp5"><h4>Safety Tips</h4><ul>${c.safety.map(s=>`<li>${s}</li>`).join('')}</ul></div>
+    <div class="tab-panel" id="mp6"><h4>Best Photo Spots</h4><ul>${c.photoSpots.map(p=>`<li>${p}</li>`).join('')}</ul></div>
+  `;
+
+  document.getElementById('modalOverlay').classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeModal() {
+  document.getElementById('modalOverlay').classList.remove('active');
+  document.body.style.overflow = '';
+}
+
+function handleModalClick(e) {
+  if (e.target === document.getElementById('modalOverlay')) closeModal();
+}
+
+function switchModalTab(btn, idx) {
+  document.querySelectorAll('.modal-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('mp' + idx).classList.add('active');
+}
+
+// ══════════════════════════════════════════
+//  TRAVEL TOOLS
+// ══════════════════════════════════════════
+function switchTool(id, btn) {
+  document.querySelectorAll('.tool-tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tool-panel').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('tool-' + id).classList.add('active');
+}
+
+const budgetBase = {
+  seoul:150, singapore:130, bali:80, tokyo:190, bangkok:80,
+  hongkong:165, kl:70, maldives:450, phuket:110, sydney:270, taipei:110, hanoi:55
+};
+
+function calcBudget() {
+  const dest = document.getElementById('budgetDest').value;
+  const travellers = parseInt(document.getElementById('budgetTravellers').value) || 1;
+  const days = parseInt(document.getElementById('budgetDays').value) || 1;
+  const perPerson = parseInt(document.getElementById('budgetPerPerson').value) || budgetBase[dest] || 100;
+  const total = travellers * days * perPerson;
+  const res = document.getElementById('budgetResult');
+  document.getElementById('budgetAmount').textContent = 'SGD ' + total.toLocaleString();
+  document.getElementById('budgetBreakdown').textContent =
+    `${travellers} traveller${travellers>1?'s':''} × ${days} day${days>1?'s':''} × SGD ${perPerson}/person/day`;
+  res.classList.add('show');
+}
+
+// ── Packing Checklist ──
+const packingItems = {
+  'Documents': ['Passport','Visa documents','Travel insurance','Flight tickets','Hotel bookings','Emergency contacts','Copies of all documents','International driving permit'],
+  'Clothing': ['T-shirts / tops','Lightweight pants','Shorts','Evening wear','Underwear & socks','Comfortable walking shoes','Sandals / flip flops','Light jacket / hoodie','Rain poncho','Swimwear'],
+  'Electronics': ['Phone & charger','Universal travel adapter','Portable power bank','Camera & memory cards','Earphones / headphones','Laptop / tablet (if needed)','Download offline maps'],
+  'Medication': ['Prescription medications','Pain relief (paracetamol)','Antihistamines','Antiseptic wipes','Blister plasters','Motion sickness tablets','Diarrhoea medication','Insect repellent'],
+  'Travel Essentials': ['Sunscreen SPF50+','Travel pillow','Sleep mask & earplugs','Reusable water bottle','Small daypack / tote','Luggage locks','TSA-approved toiletry bag','Local currency cash']
+};
+
+function renderChecklist() {
+  const saved = JSON.parse(localStorage.getItem('travelChecklist') || '{}');
+  const container = document.getElementById('checklistContainer');
+  container.innerHTML = Object.entries(packingItems).map(([cat, items]) => `
+    <div class="checklist-cat">
+      <h4>${cat}</h4>
+      ${items.map((item, i) => {
+        const key = cat + '_' + i;
+        const checked = saved[key] ? 'checked' : '';
+        return `<div class="checklist-item">
+          <input type="checkbox" id="chk_${key}" ${checked} onchange="saveChecklist('${key}', this.checked)">
+          <label for="chk_${key}">${item}</label>
+        </div>`;
+      }).join('')}
+    </div>
+  `).join('');
+}
+
+function saveChecklist(key, checked) {
+  const saved = JSON.parse(localStorage.getItem('travelChecklist') || '{}');
+  saved[key] = checked;
+  localStorage.setItem('travelChecklist', JSON.stringify(saved));
+}
+
+function resetChecklist() {
+  localStorage.removeItem('travelChecklist');
+  renderChecklist();
+}
+
+// ── Itinerary Planner ──
+function loadItinerary() {
+  const entries = JSON.parse(localStorage.getItem('travelItinerary') || '[]');
+  renderItinerary(entries);
+}
+
+function addItineraryEntry() {
+  const day = document.getElementById('itinDay').value;
+  const time = document.getElementById('itinTime').value;
+  const activity = document.getElementById('itinActivity').value.trim();
+  const notes = document.getElementById('itinNotes').value.trim();
+  if (!activity) { document.getElementById('itinActivity').focus(); return; }
+  const entries = JSON.parse(localStorage.getItem('travelItinerary') || '[]');
+  entries.push({ day, time, activity, notes, id: Date.now() });
+  entries.sort((a,b) => (parseInt(a.day)||0) - (parseInt(b.day)||0));
+  localStorage.setItem('travelItinerary', JSON.stringify(entries));
+  document.getElementById('itinActivity').value = '';
+  document.getElementById('itinNotes').value = '';
+  renderItinerary(entries);
+}
+
+function deleteItineraryEntry(id) {
+  let entries = JSON.parse(localStorage.getItem('travelItinerary') || '[]');
+  entries = entries.filter(e => e.id !== id);
+  localStorage.setItem('travelItinerary', JSON.stringify(entries));
+  renderItinerary(entries);
+}
+
+function renderItinerary(entries) {
+  const empty = document.getElementById('itinEmpty');
+  const list = document.getElementById('itinEntries');
+  if (!entries.length) { empty.style.display='block'; list.innerHTML=''; return; }
+  empty.style.display = 'none';
+  list.innerHTML = entries.map(e => `
+    <div class="itinerary-entry">
+      <div class="itinerary-entry-day">Day ${e.day}</div>
+      <div class="itinerary-entry-time">${e.time || ''}</div>
+      <div class="itinerary-entry-body">
+        <strong>${e.activity}</strong>
+        ${e.notes ? `<span>${e.notes}</span>` : ''}
+      </div>
+      <button class="btn-delete" onclick="deleteItineraryEntry(${e.id})" title="Delete">✕</button>
+    </div>
+  `).join('');
+}
+
+// ══════════════════════════════════════════
+//  WEATHER
+// ══════════════════════════════════════════
+
+// Replace this with your real OpenWeather API key
+// Get one free at https://openweathermap.org/api
+const OPENWEATHER_API_KEY = 'YOUR_API_KEY_HERE';
+
+function checkWeather() {
+  const city = document.getElementById('weatherInput').value.trim();
+  if (!city) return;
+  checkWeatherCity(city);
+}
+
+function checkWeatherCity(city) {
+  document.getElementById('weatherInput').value = city;
+  const errEl = document.getElementById('weatherError');
+  const resEl = document.getElementById('weatherResult');
+  errEl.classList.remove('show');
+  resEl.classList.remove('show');
+
+  if (OPENWEATHER_API_KEY === 'YOUR_API_KEY_HERE') {
+    errEl.textContent = 'Add your OpenWeather API key to the script to enable live weather. Get one free at openweathermap.org/api';
+    errEl.classList.add('show');
+    return;
+  }
+
+  const url = `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(city)}&appid=${OPENWEATHER_API_KEY}&units=metric`;
+
+  fetch(url)
+    .then(r => { if (!r.ok) throw new Error('City not found'); return r.json(); })
+    .then(data => {
+      document.getElementById('wCity').textContent = data.name + ', ' + data.sys.country;
+      document.getElementById('wCondition').textContent = data.weather[0].description;
+      document.getElementById('wTemp').textContent = Math.round(data.main.temp);
+      document.getElementById('wHumidity').textContent = data.main.humidity + '%';
+      document.getElementById('wWind').textContent = Math.round(data.wind.speed * 3.6) + ' km/h';
+      document.getElementById('wFeels').textContent = Math.round(data.main.feels_like) + '°C';
+      resEl.classList.add('show');
+    })
+    .catch(err => {
+      errEl.textContent = 'City not found. Please check the spelling and try again.';
+      errEl.classList.add('show');
+    });
+}
+
+// ══════════════════════════════════════════
+//  SAFETY GRID
+// ══════════════════════════════════════════
+function renderSafetyGrid() {
+  document.getElementById('safetyGrid').innerHTML = safetyData.map(s => `
+    <div class="safety-card ${s.level}">
+      <div class="safety-card-header">
+        <h4>${s.name}</h4>
+        <span class="safety-badge ${s.level}">${s.badge}</span>
+      </div>
+      <ul class="safety-tips">
+        ${s.tips.map(t => `<li>${t}</li>`).join('')}
+      </ul>
+      <div class="safety-emergency"><strong>Emergency:</strong> ${s.emergency}</div>
+    </div>
+  `).join('');
+}
+
+// ══════════════════════════════════════════
+//  ENQUIRY FORM
+// ══════════════════════════════════════════
+function submitEnquiry(e) {
+  e.preventDefault();
+  let valid = true;
+
+  const fields = [
+    { id: 'eqName', fg: 'fg-name', check: v => v.trim().length >= 2 },
+    { id: 'eqEmail', fg: 'fg-email', check: v => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v) },
+    { id: 'eqDest', fg: 'fg-dest', check: v => v !== '' }
+  ];
+
+  fields.forEach(f => {
+    const el = document.getElementById(f.id);
+    const fg = document.getElementById(f.fg);
+    if (!f.check(el.value)) { fg.classList.add('has-error'); valid = false; }
+    else fg.classList.remove('has-error');
+  });
+
+  if (!valid) return;
+
+  const entry = {
+    name: document.getElementById('eqName').value,
+    email: document.getElementById('eqEmail').value,
+    phone: document.getElementById('eqPhone').value,
+    destination: document.getElementById('eqDest').value,
+    date: document.getElementById('eqDate').value,
+    travellers: document.getElementById('eqTravellers').value,
+    message: document.getElementById('eqMessage').value,
+    submittedAt: new Date().toISOString()
+  };
+
+  const existing = JSON.parse(localStorage.getItem('travel_enquiries') || '[]');
+  existing.push(entry);
+  localStorage.setItem('travel_enquiries', JSON.stringify(existing));
+
+  document.getElementById('enquiryForm').style.display = 'none';
+  document.getElementById('enquirySuccess').classList.add('show');
+}
+
+function resetEnquiry() {
+  document.getElementById('enquiryForm').reset();
+  document.getElementById('enquiryForm').style.display = 'block';
+  document.getElementById('enquirySuccess').classList.remove('show');
+  ['fg-name','fg-email','fg-dest'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.classList.remove('has-error');
+  });
+}
+
+// ══════════════════════════════════════════
+//  NAV BEHAVIOUR
+// ══════════════════════════════════════════
+function initNav() {
+  const nav = document.getElementById('nav');
+  window.addEventListener('scroll', () => {
+    nav.classList.toggle('scrolled', window.scrollY > 60);
+  });
+
+  document.getElementById('navHamburger').addEventListener('click', () => {
+    document.getElementById('mobileMenu').classList.add('open');
+  });
+  document.getElementById('mobileMenuClose').addEventListener('click', () => {
+    document.getElementById('mobileMenu').classList.remove('open');
+  });
+  document.querySelectorAll('.mobile-nav-link').forEach(a => {
+    a.addEventListener('click', () => {
+      document.getElementById('mobileMenu').classList.remove('open');
+    });
+  });
+}
+
+// Close modal on Escape key
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeModal();
+});
+
+// ══════════════════════════════════════════
+//  INIT
+// ══════════════════════════════════════════
+document.addEventListener('DOMContentLoaded', () => {
+  renderCityCards();
+  renderSafetyGrid();
+  renderChecklist();
+  loadItinerary();
+  initNav();
+});
+</script>
+</body>
+</html>

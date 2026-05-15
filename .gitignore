@@ -1,0 +1,39 @@
+# Secrets / env
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+credentials.json
+secrets.json
+service-account*.json
+.aws/
+.ssh/
+
+# OS / editor cruft
+.DS_Store
+Thumbs.db
+*.swp
+.vscode/
+.idea/
+
+# Claude local artifacts (skill/command files ARE committed)
+.claude/settings.local.json
+.claude (temp)
+.claude\ (temp)/
+
+# Playwright MCP local data & traces
+.playwright-mcp/
+playwright-report/
+test-results/
+
+# Logs
+*.log
+server.log
+
+# Stray screenshots from MCP runs (the canonical screenshot.png IS committed)
+i18n-*.png
+screenshot-*.png
+!screenshot.png

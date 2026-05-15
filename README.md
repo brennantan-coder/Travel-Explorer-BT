@@ -1,10 +1,16 @@
-# Travel Explorer
+# Travel Explorer 旅
 
 > **We went, so you know where to go.**
 
-A premium single-page travel discovery website featuring curated city guides, interactive travel tools, weather lookup, safety notes, and travel enquiries — built with **pure HTML, CSS, and JavaScript**. No frameworks. No backend. Just one beautiful file.
+A single-page travel discovery site in a Japanese Zen aesthetic — sakura pinks on washi paper, sumi-ink type, generous whitespace. Curated city guides, interactive travel tools, an offline climate snapshot, safety notes, and a contact form. Built with **pure HTML, CSS, and JavaScript** — no frameworks, no backend, no API keys.
 
 🌐 **Live demo:** [brennantan-coder.github.io/Travel-Explorer-BT](https://brennantan-coder.github.io/Travel-Explorer-BT/)
+
+---
+
+## Preview
+
+![Travel Explorer — Japanese Zen pinkish hero](screenshot.png)
 
 ---
 
@@ -27,20 +33,21 @@ Each guide includes:
 - **Packing Checklist** — 5 categories, persists in `localStorage`
 - **Itinerary Planner** — add/delete activities by day, persists in `localStorage`
 
-### Weather Widget
-Live current conditions for any city worldwide via **OpenWeather API**. 12 quick-pick destination buttons. Add your API key once to enable.
+### Climate Snapshot (offline)
+Seasonal climate averages for all 12 destinations — temperature, humidity, wind, feels-like. Fully offline, no API key, no network call. Quick-pick buttons for every featured city.
 
 ### Safety Section
-Color-coded safety ratings (safe / moderate / caution) for all 12 destinations with key tips and emergency contact numbers.
+Three-tier safety ratings (safe / moderate / caution) for all 12 destinations with key tips and emergency contact numbers.
 
 ### Enquiry Form
 Validated contact form with email regex check, success state, and `localStorage` persistence.
 
 ### Design
-- Editorial travel-magazine aesthetic
-- **Playfair Display** serif headlines + **Inter** for body text
-- Black / white / gold accent palette
-- Cinematic Unsplash hero imagery
+- **Japanese Zen, pinkish** — sakura blush on washi rice paper
+- Display type: **Shippori Mincho B1** + **Noto Serif JP**; refined italic accents in **Cormorant Garamond**; UI in **Noto Sans JP**
+- Sumi-ink black with sakura / washi / kinari accent palette
+- Subtle enso (circle) accent on the hero, hairline rules between sections
+- Cinematic Unsplash imagery, gently desaturated
 - Fully responsive (mobile, tablet, desktop)
 - Smooth scroll, fade-in modals, hover transitions
 
@@ -51,21 +58,14 @@ Validated contact form with email regex check, success state, and `localStorage`
 ### Option 1 — Open directly
 Simply double-click `index.html` to open it in your browser. That's it.
 
-### Option 2 — Local server (recommended for the Weather API)
+### Option 2 — Local server
 ```powershell
 cd "path\to\Travel"
 python -m http.server 8080
 ```
 Then open [http://localhost:8080](http://localhost:8080)
 
-### Enabling the Weather Widget
-1. Get a free API key at [openweathermap.org/api](https://openweathermap.org/api)
-2. Open `index.html` and find this line near the bottom of the `<script>`:
-   ```js
-   const OPENWEATHER_API_KEY = 'YOUR_API_KEY_HERE';
-   ```
-3. Replace `'YOUR_API_KEY_HERE'` with your actual key
-4. Reload — live weather is now active
+> No API keys, no `.env`, no setup. The climate snapshot ships with the page.
 
 ---
 
@@ -107,18 +107,12 @@ This repository auto-deploys to GitHub Pages on every push to `main` via the wor
 | Markup | HTML5 |
 | Styling | CSS3 (Grid, Flexbox, custom properties) |
 | Logic | Vanilla JavaScript (ES6+) |
-| Fonts | Google Fonts — Playfair Display + Inter |
+| Fonts | Google Fonts — Shippori Mincho B1, Noto Serif JP, Cormorant Garamond, Noto Sans JP |
 | Imagery | Unsplash |
-| Weather | OpenWeather API |
+| Climate | Offline seasonal snapshot (no API) |
 | Persistence | Browser `localStorage` |
 | Hosting | GitHub Pages |
 | CI/CD | GitHub Actions |
-
----
-
-## Screenshots
-
-> A screenshot of the live site will be added soon — captured via Playwright MCP automation.
 
 ---
 
